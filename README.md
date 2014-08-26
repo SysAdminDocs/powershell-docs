@@ -1,20 +1,32 @@
 powershell-docs
 ===============
 
-#General
+# Table of Contents
 
-##DateTime Manipulation
+- [General](#general)
+    - [DateTime Manipulation](#datetime-manipulation)
+        - [Playing with Days](#playing-with-days)
+    - [File Manipulation](#file-manipulation)
+        - [Changing Extensions](#changing-extensions)
+        - [Pin Pointing Information in a CSV](#pin-pointing-information-in-a-csv)
+    - [SSH & SCP Operations](#ssh-and-scp-operations)
+        - [Execute Commands Over SSH](#execute-commands-over-ssh)
+        - [Synchronize a Remote Directory to Local](#synchronize-a-remote-directory-to-local)
 
-###Playing with Days
+# General
+
+## DateTime Manipulation
+
+### Playing with Days
 
 Getting the previous day's date, and putting it into `ISO` format.
 
 ```powershell
 $ "{0:yyyyMMdd}" -f (Get-Date).AddDays(-1)
 ```
-##File Manipulation
+## File Manipulation
 
-###Changing Extensions
+### Changing Extensions
 
 Change the extensions of all files within a folder.
 ```powershell
@@ -39,7 +51,35 @@ ForEach($file in $Global:filesToChange) {
 }
 ```
 
-##SSH & SCP Operations
+### Pin Pointing Information in a CSV
+
+This is about getting a value of a column using in essence _x,y_ coordinates.
+
+Here is an example CSV that we will use. This example will be looking at a backup schedule, and if a server should be backed up on a particular date or not.
+
+```csv
+serverName,20140826,20140827,20140828,20140829
+myServer1,0,1,0,0
+myServer2,1,0,1,0
+myServer3,0,0,1,1
+```
+
+The above csv has the filename `schedule.csv`, and will be sitting in the same directory as the script.
+
+```powershell
+$todaysDate = Get-Date -Format "yyyyMMdd"
+$localMachine = $env:computername
+$scheduleCsv = Import-Csv -Path "$PSScriptRoot\schedule.csv"
+
+$returnValue = $scheduleCsv | ? { $_.serverName -eq $localMachine } | % { $_.$todaysDate }
+
+if($returnValue -eq 1) {
+    Write-Host ("{0} should backup today" -f $localMachine)
+} else {
+    Write-Warning ("{0} should not backup today" -f $localMachine)
+}
+```
+## SSH & SCP Operations
 
 These operations all require WinSCP.net and the following import line.
 `Add-Type -Path "C:\WinSCP\WinSCPnet.dll"
@@ -85,7 +125,7 @@ finally
 
 As per the above note about the `SshPrivateKeyPath`, with this you can either define the path to the key (_where the key is not encrypted and does not require a password_) or, if you just put the __name__ of the key and nothing else, as long as the key is loaded in [Pageant](http://en.wikipedia.org/wiki/PuTTY#Components) then it will use that keys. As such you will be able to have an encrypted SSH Private Key.
 
-###Synchronize a Remote Directory to our Local Machine
+### Synchronize a Remote Directory to Local
 
 This will sync a directory from a remote server to a directory on our local machine, after the sync has completed it will also remove the file from the remote machine.
 
