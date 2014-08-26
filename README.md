@@ -117,18 +117,23 @@ try
     
     ForEach($Local:download in $Local:synchronizationResult.Downloads) {
         if($Local:download.Error -eq $Null) {
-            Write-Host ("Download of {0} succeeded, removing from source" -f $Local:download.FileName)
+            Write-Host ("Download of {0} succeeded, removing from source" -f
+                $Local:download.FileName)
             
             # -- Remove Remote File
-            $Local:removalResult = $Local:session.RemoveFiles($Local:session.EscapeFileMask($Local:download.FileName))
+            $Local:removalResult = $Local:session.RemoveFiles(
+                $Local:session.EscapeFileMask($Local:download.FileName))
             
             if($Local:removalResult.IsSuccess) {
-                Write-Host ("Removal of {0} succeeded." -f $Local:download.FileName)
+                Write-Host ("Removal of {0} succeeded." -f
+                    $Local:download.FileName)
             } else {
-                Write-Error ("Removal of {0} failed!" -f $Local:download.FileName)
+                Write-Error ("Removal of {0} failed!" -f
+                    $Local:download.FileName)
             }
         } else {
-            Write-Error ("Download of {0} failed: {1}" -f $Local:download:FileName, $Local:download.Error.Message)
+            Write-Error ("Download of {0} failed: {1}" -f
+                $Local:download:FileName, $Local:download.Error.Message)
         }
     }
 }
