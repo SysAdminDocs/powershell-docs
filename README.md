@@ -24,6 +24,12 @@ Getting the previous day's date, and putting it into `ISO` format.
 ```powershell
 $ "{0:yyyyMMdd}" -f (Get-Date).AddDays(-1)
 ```
+
+Another method is by piping the values. In the following example I want to get the previous months abbreviated name.
+
+```powershell
+$ (Get-Date).AddMonths(-1) | Get-Date -UFormat %b
+```
 ## File Manipulation
 
 ### Changing Extensions
